@@ -1,2 +1,0 @@
-sample text
-there is same string in other files
