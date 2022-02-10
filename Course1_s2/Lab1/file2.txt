@@ -1,4 +1,0 @@
-this is not a string
-sample text
-there is same string in other files
-tut bil petya
