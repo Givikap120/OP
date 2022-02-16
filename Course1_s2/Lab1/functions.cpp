@@ -1,10 +1,26 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <vector>
 #include "header.h"
 
 using namespace std;
 
+ofstream file_create_edit(string filename) {
+	string choose;
+	ofstream file;
+	if (check_for_file(filename)) {
+		cout << filename <<" is already found. Clear it? (y/n)" << endl;
+		cin >> choose;
+		cin.ignore();
+		if (choose == "y" or choose == "Y" or choose == "+") file.open(filename, ios::out);
+		else file.open(filename, ios::app);
+	}
+	else file.open(filename, ios::out);
+	cout << "Enter " << filename << " text (CTRL+X and enter - end of input):" << endl;
+	cin_to_ofstream(&file);
+	return file;
+}
 bool file_is_empty(ifstream* file) {
 	string temp;
 	*file >> temp;
@@ -14,40 +30,23 @@ bool file_is_empty(ifstream* file) {
 		return false;
 	}
 }
-bool is_in_file(string sample, ifstream* file) {
-	file->clear();
-	file->seekg(0);
-	string temp;
-
-	while (file->eof() == false) {
-		getline(*file, temp);
-		if (sample == temp) return true;
+bool is_in_text(string sample, vector<string> text) {
+	for (size_t i = 0; i < text.size(); i++) {
+		if (sample == text[i]) return true;
 	}
 	return false;
 }
-void copy_not_matching(ifstream* get, ifstream* compare, ofstream* copy) {
-	string current_line;
-	bool first = true;
-	while (get->eof() == false)
+vector<string> copy_not_matching(vector<string> get, vector<string> compare) {
+	vector<string> result;
+	for (size_t i = 0; i < get.size(); i++)
 	{
-		getline(*get, current_line);
-		if (is_in_file(current_line, compare) == false) {
-			*copy << current_line << endl;
+		if (is_in_text(get[i], compare) == false) {
+			result.push_back(get[i]);
 		}
 	}
+	return result;
 }
 
-int count_num_of_lines(ifstream* file) {
-	file->clear();
-	file->seekg(0);
-	int counter = 0;
-	string trashcan;
-	while (*file) {
-		getline(*file, trashcan);
-		counter++;
-	}
-	return counter - 1;
-}
 void print(ifstream* file) {
 	file->clear();
 	file->seekg(0);
@@ -57,6 +56,31 @@ void print(ifstream* file) {
 		cout << temp << endl;
 	}
 	cout << endl;
+}
+
+void print(vector<string> text) {
+	for (size_t i = 0; i < text.size(); i++)
+	{
+		cout << text[i] << endl;
+	}
+	cout << endl;
+}
+
+vector<string> read_file(ifstream* file) {
+	vector<string> result;
+	string line;
+	while (*file) {
+		getline(*file, line);
+		result.push_back(line);
+	}
+	return result;
+}
+
+void write_file(vector<string> text, ofstream* file) {
+	for (size_t i = 0; i < text.size(); i++)
+	{
+		*file << text[i] << endl;
+	}
 }
 
 void cin_to_ofstream(ofstream* file) {
